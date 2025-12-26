@@ -70,7 +70,7 @@ export class UsersService {
     const hashed = await bcrypt.hash(password, 10);
 
     return this.prisma.user.create({
-      data: { email, name, password: hashed, role: 'CLIENT' },
+      data: { email, name, password: hashed, role: 'BARBER' },
       select: {
         id: true,
         email: true,
