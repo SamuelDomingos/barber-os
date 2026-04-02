@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  password     String
+  avatar       String?
+  phone        String?
+  role         UserRole
+  active       Boolean     @default(true)
+  barbershopId String?
+  barbershop   Barbershop? @relation(fields: [barbershopId], references: [id], onDelete: Cascade, map: "User_barbershop_fkey")
+
+  clientAppointments Appointment[] @relation("ClientAppointments")
+  barberAppointments Appointment[] @relation("BarberAppointments")
+}
+
+enum UserRole {
+  ADMIN
+  BARBER
+  CLIENT
+}
+
+model Barbershop {
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  themeConfig       ThemeConfig?
+  configAppointment ConfigAppointmentBarber?
+
+  locations    BarbershopLocation[]
+  users        User[]
+  catalogItems CatalogItem[]
+  appointments Appointment[]
+  workingHours WorkingHours[]
+}
+
+model ThemeConfig {
+  id    String @id @default(uuid())
+  style String
+
+  barbershopId String     @unique
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+}
+
+model BarbershopLocation {
+  id            String   @id @default(uuid())
+  country       String
+  state         String
+  city          String
+  address       String
+  numberAddress String
+  postalCode    String?
+  maxDistancia  Decimal  @default(50.0)
+  createdAt     DateTime @default(now())
+
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+}
+
+enum CatalogItemType {
+  SERVICE
+  PRODUCT
+  PACKAGE
+}
+
+model CatalogItem {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal
+  active      Boolean         @default(true)
+  image       String?
+  type        CatalogItemType
+  createdAt   DateTime        @default(now())
+
+  duration Int?
+  category String?
+
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  packageItems    CatalogItemPackage[] @relation("PackageItems")
+  includedInItems CatalogItemPackage[] @relation("IncludedItems")
+
+  appointmentItems AppointmentItem[]
+}
+
+model CatalogItemPackage {
+  id       String @id @default(uuid())
+
+  packageId String
+  package   CatalogItem @relation("PackageItems", fields: [packageId], references: [id], onDelete: Cascade)
+
+  itemId String
+  item   CatalogItem @relation("IncludedItems", fields: [itemId], references: [id])
+}
+
+model ConfigAppointmentBarber {
+  id String @id @default(uuid())
+
+  barbershopId String     @unique
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+
+  slotInterval Int @default(15)
+
+  autoAdjustVisibleHours Boolean @default(true)
+  visibleStartMinutes    Int?
+  visibleEndMinutes      Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkingHours {
+  id String @id @default(uuid())
+
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+
+  dayOfWeek Int
+
+  startMinutes Int
+  endMinutes   Int
+
+  isOpen Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([barbershopId, dayOfWeek])
+}
+
+model Appointment {
+  id        String            @id @default(uuid())
+  date      DateTime
+  status    AppointmentStatus @default(PENDING)
+  notes     String?
+  color     String
+  createdAt DateTime          @default(now())
+
+  clientId String
+  client   User   @relation("ClientAppointments", fields: [clientId], references: [id], onDelete: Cascade)
+
+  barberId String?
+  barber   User?   @relation("BarberAppointments", fields: [barberId], references: [id])
+
+  barbershopId String
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id], onDelete: Cascade)
+
+  items AppointmentItem[]
+}
+
+model AppointmentItem {
+  id String @id @default(uuid())
+
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  catalogItemId String
+  catalogItem   CatalogItem @relation(fields: [catalogItemId], references: [id])
+
+  quantity Int     @default(1)
+  price    Decimal
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
