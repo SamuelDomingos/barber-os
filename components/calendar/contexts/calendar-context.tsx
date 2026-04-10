@@ -3,30 +3,13 @@
 import { createContext, useContext, useState, useMemo } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type {
+  Barber,
+  ConfigData,
   TBadgeVariant,
   TVisibleHours,
   TWorkingHours,
 } from "@/components/calendar/types";
-
-type Barber = {
-  id: string;
-  name: string;
-  avatar: string | null;
-};
-
-type ConfigData = {
-  config: {
-    autoAdjustVisibleHours: boolean;
-    visibleStartMinutes: number | null;
-    visibleEndMinutes: number | null;
-  };
-  workingHours: {
-    dayOfWeek: number;
-    startMinutes: number;
-    endMinutes: number;
-    isOpen: boolean;
-  }[];
-} | null;
+import { IEvent } from "../interfaces";
 
 interface ICalendarContext {
   selectedDate: Date;
@@ -109,6 +92,7 @@ export function CalendarProvider({
     if (!date) return;
     setSelectedDate(date);
   };
+  
 
   return (
     <CalendarContext.Provider

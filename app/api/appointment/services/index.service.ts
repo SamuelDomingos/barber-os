@@ -1,5 +1,4 @@
 import prisma from "@/lib/prisma";
-import { PaginationParams } from "@/lib/pagination";
 import { validateAppointmentAvailability } from "./validateAppointment.service";
 import { AppointmentStatus } from "@/generated/enums";
 import { Prisma } from "@/generated/client";
@@ -95,7 +94,6 @@ const AppointmentService = () => {
     barbershopId: string;
     items: { catalogItemId: string }[];
   }) => {
-    
     const date = new Date(data.date);
     if (isNaN(date.getTime())) {
       throw new Error("Data inválida");
@@ -175,31 +173,26 @@ const AppointmentService = () => {
     });
   };
 
-  const get = async (barbershopId: string, pagination: PaginationParams) => {
-    const [appointments, total] = await prisma.$transaction([
-      prisma.appointment.findMany({
-        where: { barbershopId },
-        orderBy: { date: "desc" },
-        skip: pagination.skip,
-        take: pagination.limit,
-        include: {
-          client: true,
-          barber: true,
-          items: { include: { catalogItem: true } },
-        },
-      }),
-      prisma.appointment.count({ where: { barbershopId } }),
-    ]);
-
-    return { appointments, total };
-  };
-
   const getById = async (id: string) => {
+    if (!id) throw new Error("ID do agendamento é obrigatório");
+
     const appointment = await prisma.appointment.findUnique({
       where: { id },
       include: {
-        client: true,
-        barber: true,
+        client: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        barber: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
         items: { include: { catalogItem: true } },
       },
     });
@@ -270,7 +263,6 @@ const AppointmentService = () => {
   return {
     postByBarbershop,
     postByClient,
-    get,
     getById,
     updateStatus,
     put,

@@ -1,7 +1,14 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Columns, Grid3x3, List, Plus, Grid2x2, CalendarRange } from "lucide-react";
+import {
+  Columns,
+  Grid3x3,
+  List,
+  Plus,
+  Grid2x2,
+  CalendarRange,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { UserSelect } from "@/components/calendar/components/header/user-select";
@@ -11,6 +18,11 @@ import { AddEventDialog } from "@/components/calendar/components/dialogs/add-eve
 
 import type { IEvent } from "@/components/calendar/interfaces";
 import type { TCalendarView } from "@/components/calendar/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface IProps {
   view: TCalendarView;
@@ -51,16 +63,22 @@ export function CalendarHeader({ view, events }: IProps) {
               const isFirst = i === 0;
               const isLast = i === viewButtons.length - 1;
               return (
-                <Button
-                  key={btn.view}
-                  aria-label={btn.label}
-                  size="icon"
-                  variant={view === btn.view ? "default" : "outline"}
-                  className={`[&_svg]:size-5 ${isFirst ? "rounded-r-none" : isLast ? "-ml-px rounded-l-none" : "-ml-px rounded-none"}`}
-                  onClick={() => setView(btn.view)}
-                >
-                  <Icon strokeWidth={1.8} />
-                </Button>
+                <Tooltip key={btn.view}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      aria-label={btn.label}
+                      size="icon"
+                      variant={view === btn.view ? "default" : "outline"}
+                      className={`[&_svg]:size-5 ${isFirst ? "rounded-r-none" : isLast ? "-ml-px rounded-l-none" : "-ml-px rounded-none"}`}
+                      onClick={() => setView(btn.view)}
+                    >
+                      <Icon strokeWidth={1.8} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{btn.label}</p>
+                  </TooltipContent>
+                </Tooltip>
               );
             })}
           </div>

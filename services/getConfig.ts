@@ -10,7 +10,7 @@ const getConfig = async () => {
 
   await authGuard(barbershopId);
 
-  const [config, workingHours] = await prisma.$transaction([
+  const [config, workingHours] = await Promise.all([
     prisma.configAppointmentBarber.findUnique({
       where: { barbershopId },
     }),

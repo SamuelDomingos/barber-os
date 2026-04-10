@@ -1,6 +1,6 @@
 
 import { Appointment } from "@/generated/client";
-import { AppointmentsData } from "./types/appointments";
+import { AppointmentsData, IAppointmentDetails,  } from "./types/appointments";
 
 export const getAppointments = async (
   barbershopId: string,
@@ -19,6 +19,18 @@ export const getAppointments = async (
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || "Erro ao buscar catálogo");
+  }
+
+  return response.json();
+};
+
+export const getAppointmentById = async (id: string): Promise<IAppointmentDetails> => {
+
+  const response = await fetch(`/api/appointment/${id}`);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Erro ao buscar agendamento");
   }
 
   return response.json();

@@ -15,9 +15,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { TimeInput } from "@/components/ui/time-input";
 import { SingleDayPicker } from "@/components/ui/single-day-picker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Form, FormField, FormLabel, FormItem, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogHeader, DialogClose, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Form,
+  FormField,
+  FormLabel,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogHeader,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 import { eventSchema } from "@/components/calendar/schemas";
 
@@ -44,15 +66,21 @@ export function EditEventDialog({ children, event }: IProps) {
       title: event.title,
       description: event.description,
       startDate: parseISO(event.startDate),
-      startTime: { hour: parseISO(event.startDate).getHours(), minute: parseISO(event.startDate).getMinutes() },
+      startTime: {
+        hour: parseISO(event.startDate).getHours(),
+        minute: parseISO(event.startDate).getMinutes(),
+      },
       endDate: parseISO(event.endDate),
-      endTime: { hour: parseISO(event.endDate).getHours(), minute: parseISO(event.endDate).getMinutes() },
+      endTime: {
+        hour: parseISO(event.endDate).getHours(),
+        minute: parseISO(event.endDate).getMinutes(),
+      },
       color: event.color,
     },
   });
 
   const onSubmit = (values: TEventFormData) => {
-    const user = users.find(user => user.id === values.user);
+    const user = users.find((user) => user.id === values.user);
 
     if (!user) throw new Error("User not found");
 
@@ -84,13 +112,19 @@ export function EditEventDialog({ children, event }: IProps) {
           <DialogTitle>Edit Event</DialogTitle>
           <DialogDescription>
             <AlertTriangle className="mr-1 inline-block size-4 text-yellow-500" />
-            This form only updates the current event state locally for demonstration purposes. If you move an event after editing, some inconsistencies may
-            occur. In a real application, you should submit this form to a backend API to persist the changes.
+            This form only updates the current event state locally for
+            demonstration purposes. If you move an event after editing, some
+            inconsistencies may occur. In a real application, you should submit
+            this form to a backend API to persist the changes.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form id="event-form" onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          <form
+            id="event-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4 py-4"
+          >
             <FormField
               control={form.control}
               name="user"
@@ -104,12 +138,21 @@ export function EditEventDialog({ children, event }: IProps) {
                       </SelectTrigger>
 
                       <SelectContent>
-                        {users.map(user => (
-                          <SelectItem key={user.id} value={user.id} className="flex-1">
+                        {users.map((user) => (
+                          <SelectItem
+                            key={user.id}
+                            value={user.id}
+                            className="flex-1"
+                          >
                             <div className="flex items-center gap-2">
                               <Avatar key={user.id} className="size-6">
-                                <AvatarImage src={user.picturePath ?? undefined} alt={user.name} />
-                                <AvatarFallback className="text-xxs">{user.name[0]}</AvatarFallback>
+                                <AvatarImage
+                                  src={user.picturePath ?? undefined}
+                                  alt={user.name}
+                                />
+                                <AvatarFallback className="text-xxs">
+                                  {user.name[0]}
+                                </AvatarFallback>
                               </Avatar>
 
                               <p className="truncate">{user.name}</p>
@@ -132,7 +175,12 @@ export function EditEventDialog({ children, event }: IProps) {
                   <FormLabel htmlFor="title">Title</FormLabel>
 
                   <FormControl>
-                    <Input id="title" placeholder="Enter a title" data-invalid={fieldState.invalid} {...field} />
+                    <Input
+                      id="title"
+                      placeholder="Enter a title"
+                      data-invalid={fieldState.invalid}
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -152,7 +200,7 @@ export function EditEventDialog({ children, event }: IProps) {
                       <SingleDayPicker
                         id="startDate"
                         value={field.value}
-                        onSelect={date => field.onChange(date as Date)}
+                        onSelect={(date) => field.onChange(date as Date)}
                         placeholder="Select a date"
                         data-invalid={fieldState.invalid}
                       />
@@ -171,7 +219,12 @@ export function EditEventDialog({ children, event }: IProps) {
                     <FormLabel>Start Time</FormLabel>
 
                     <FormControl>
-                      <TimeInput value={field.value as TimeValue} onChange={field.onChange} hourCycle={12} data-invalid={fieldState.invalid} />
+                      <TimeInput
+                        value={field.value as TimeValue}
+                        onChange={field.onChange}
+                        hourCycle={12}
+                        data-invalid={fieldState.invalid}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -190,7 +243,7 @@ export function EditEventDialog({ children, event }: IProps) {
                     <FormControl>
                       <SingleDayPicker
                         value={field.value}
-                        onSelect={date => field.onChange(date as Date)}
+                        onSelect={(date) => field.onChange(date as Date)}
                         placeholder="Select a date"
                         data-invalid={fieldState.invalid}
                       />
@@ -207,7 +260,12 @@ export function EditEventDialog({ children, event }: IProps) {
                   <FormItem className="flex-1">
                     <FormLabel>End Time</FormLabel>
                     <FormControl>
-                      <TimeInput value={field.value as TimeValue} onChange={field.onChange} hourCycle={12} data-invalid={fieldState.invalid} />
+                      <TimeInput
+                        value={field.value as TimeValue}
+                        onChange={field.onChange}
+                        hourCycle={12}
+                        data-invalid={fieldState.invalid}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -292,7 +350,11 @@ export function EditEventDialog({ children, event }: IProps) {
                   <FormLabel>Description</FormLabel>
 
                   <FormControl>
-                    <Textarea {...field} value={field.value} data-invalid={fieldState.invalid} />
+                    <Textarea
+                      {...field}
+                      value={field.value}
+                      data-invalid={fieldState.invalid}
+                    />
                   </FormControl>
 
                   <FormMessage />
